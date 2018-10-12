@@ -18,7 +18,16 @@ func init() {
 	flag.IntVar(&maxWorker, "w", 30, "The number of workers to start")
 	flag.IntVar(&maxQueue, "q", 300, "The size of job queue")
 }
-func payloadHandler(w http.ResponseWriter, r *http.Request) {
+
+func pingHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func logHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -39,11 +48,10 @@ func main() {
 		Scheduler:  &simpleScheduler,
 	}
 	dispatcher.Run()
-	http.HandleFunc("/payload/", payloadHandler)
+	http.HandleFunc("/ping", pingHandler)
+	http.HandleFunc("/logs", logHandler)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		log.Fatal("starting listening for payload messages")
-	} else {
 		log.Fatalf("an error occured while starting payload server %s", err.Error())
 	}
 }
