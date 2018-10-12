@@ -6,13 +6,14 @@ import (
 
 type Dispatcher struct {
 	Scheduler  Scheduler
-	maxWorkers int
+	MaxWorkers int
+	MaxQueue   int
 }
 
 func (d *Dispatcher) Run() {
-	in := make(chan def.Job)
+	in := make(chan def.Job, d.MaxQueue)
 	d.Scheduler.ConfigureWorkerChan(in)
-	for i := 0; i < d.maxWorkers; i++ {
+	for i := 0; i < d.MaxWorkers; i++ {
 		createWorker(in, d.Scheduler, i)
 	}
 }

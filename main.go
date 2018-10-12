@@ -34,7 +34,8 @@ func main() {
 	log.Printf("main start with %d worker, max queue size %d", maxWorker, maxQueue)
 	simpleScheduler = SimpleScheduler{}
 	dispatcher := Dispatcher{
-		maxWorkers: maxWorker,
+		MaxWorkers: maxWorker,
+		MaxQueue:   maxQueue,
 		Scheduler:  &simpleScheduler,
 	}
 	dispatcher.Run()
