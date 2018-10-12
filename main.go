@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 
@@ -8,10 +9,15 @@ import (
 )
 
 var (
-	MaxWorker       = 20 //os.Getenv("MAX_WORKERS")
+	maxWorker       int
+	maxQueue        int
 	simpleScheduler SimpleScheduler
 )
 
+func init() {
+	flag.IntVar(&maxWorker, "w", 30, "The number of workers to start")
+	flag.IntVar(&maxQueue, "q", 300, "The size of job queue")
+}
 func payloadHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "POST" {
@@ -24,10 +30,11 @@ func payloadHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 func main() {
-	log.Println("main start")
+	flag.Parse()
+	log.Printf("main start with %d worker, max queue size %d", maxWorker, maxQueue)
 	simpleScheduler = SimpleScheduler{}
 	dispatcher := Dispatcher{
-		maxWorkers: MaxWorker,
+		maxWorkers: maxWorker,
 		Scheduler:  &simpleScheduler,
 	}
 	dispatcher.Run()
